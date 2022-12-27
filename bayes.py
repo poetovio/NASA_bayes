@@ -17,7 +17,10 @@ def klasifikacija(podatki):
     return classes
 
 def povzemanje(podatki):
-    return [(np.mean(vrstica), np.std(vrstica), len(vrstica)) for vrstica in zip(*podatki)]
+    # return [(np.mean(vrstica), np.std(vrstica), len(vrstica)) for vrstica in zip(*podatki)]
+    povzetki = [(np.mean(vrstica), np.std(vrstica), len(vrstica)) for vrstica in zip(*podatki)]
+    del(povzetki[-1])
+    return povzetki
 
 def class_povzetek(podatki):
     razbitje = klasifikacija(podatki)
@@ -33,6 +36,20 @@ def verjetnost(x, povprecje, deviation):
     eksponent = exp(-((x - povprecje)**2 / (2 * deviation**2)))
 
     return (1 / (sqrt(2 * pi) * deviation)) * eksponent
+
+def pripadanje(povzetek, vrstica):
+    sestevek = sum([povzetek[instanca][0][2] for instanca in povzetek])
+
+    pripadnost = dict()
+
+    for instanca, povzetki in povzetek.items():
+        pripadnost[instanca] = povzetek[instanca][0][2] / float(sestevek)
+
+        for i in range(len(povzetki)):
+            povprecje, deviation, _ = povzetki[i]
+            pripadnost[instanca] *= verjetnost(vrstica[i], povprecje, deviation)
+    
+    return pripadnost
 
 
 def algoritem():
@@ -54,11 +71,6 @@ dataset = [[3.393533211,2.331273381,0],
 
 rezultat = class_povzetek(dataset)
 
-for i in rezultat:
-    print(i)
-    for j in rezultat[i]:
-        print(j)
+rezultat2 = pripadanje(rezultat, dataset[0])
 
-print(verjetnost(1.0, 1.0, 1.0))
-print(verjetnost(2.0, 1.0, 1.0))
-print(verjetnost(0.0, 1.0, 1.0))
+print(rezultat2)
