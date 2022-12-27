@@ -1,6 +1,9 @@
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
+from math import sqrt
+from math import pi
+from math import exp
 
 def klasifikacija(podatki):
     classes = dict()
@@ -15,6 +18,21 @@ def klasifikacija(podatki):
 
 def povzemanje(podatki):
     return [(np.mean(vrstica), np.std(vrstica), len(vrstica)) for vrstica in zip(*podatki)]
+
+def class_povzetek(podatki):
+    razbitje = klasifikacija(podatki)
+
+    slovar = dict()
+
+    for instanca, vrstice in razbitje.items():
+        slovar[instanca] = povzemanje(vrstice)
+
+    return slovar
+
+def verjetnost(x, povprecje, deviation):
+    eksponent = exp(-((x - povprecje)**2 / (2 * deviation**2)))
+
+    return (1 / (sqrt(2 * pi) * deviation)) * eksponent
 
 
 def algoritem():
@@ -34,4 +52,13 @@ dataset = [[3.393533211,2.331273381,0],
  [7.792783481,3.424088941,1],
  [7.939820817,0.791637231,1]]
 
-print(povzemanje(dataset)) 
+rezultat = class_povzetek(dataset)
+
+for i in rezultat:
+    print(i)
+    for j in rezultat[i]:
+        print(j)
+
+print(verjetnost(1.0, 1.0, 1.0))
+print(verjetnost(2.0, 1.0, 1.0))
+print(verjetnost(0.0, 1.0, 1.0))
