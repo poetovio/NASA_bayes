@@ -4,6 +4,16 @@ from sklearn.model_selection import train_test_split
 from math import sqrt
 from math import pi
 from math import exp
+from csv import reader
+import random
+
+def file_load(path):
+    podatki = []
+    with open(path, 'r') as datoteka:
+        for element in datoteka:
+            podatki.append(element)
+
+    return podatki
 
 def klasifikacija(podatki):
     classes = dict()
@@ -51,6 +61,27 @@ def pripadanje(povzetek, vrstica):
     
     return pripadnost
 
+def navkriznaValidacija(podatki, stKosov):
+    data = list()
+    kopija = list(podatki)
+
+    velikostKosa = int(len(podatki) / stKosov)
+
+    preurejeno = random.sample(podatki, len(podatki))
+
+    stevec = 0
+
+    for i in range(stKosov):
+        kos = list()
+
+        for j in range(velikostKosa):
+            kos.append(preurejeno[stevec])
+            stevec += 1
+
+        data.append(kos)
+
+    return data
+
 
 def algoritem():
     # TODO: -> potrebno implementirati
@@ -71,6 +102,9 @@ dataset = [[3.393533211,2.331273381,0],
 
 rezultat = class_povzetek(dataset)
 
-rezultat2 = pripadanje(rezultat, dataset[0])
+rezultat2 = pripadanje(rezultat, dataset[1])
 
+print(rezultat)
 print(rezultat2)
+
+print(navkriznaValidacija(dataset, 3))
