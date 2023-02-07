@@ -9,9 +9,20 @@ import random
 
 def file_load(path):
     podatki = []
+    
+    indeksi = [0, 1, 6, 7] # indeksi irelevantnih stolpcev
+
     with open(path, 'r') as datoteka:
         for element in datoteka:
-            podatki.append(element)
+
+            podatek = element.split(",")
+
+            podatek[9] = ''.join(podatek[9].splitlines()) # odstrani \n v vrednosti
+
+            for i in sorted(indeksi, reverse=True): # zanka odstrani nepomembne stolpce, ki se ne bodo uporabili v učenju
+                del podatek[i] 
+
+            podatki.append(podatek)
 
     return podatki
 
@@ -42,10 +53,10 @@ def class_povzetek(podatki):
 
     return slovar
 
-def verjetnost(x, povprecje, deviation):
-    eksponent = exp(-((x - povprecje)**2 / (2 * deviation**2)))
+def verjetnost(x, povprecje, odstop):
+    eksponent = exp(-((x - povprecje)**2 / (2 * odstop**2)))
 
-    return (1 / (sqrt(2 * pi) * deviation)) * eksponent
+    return (1 / (sqrt(2 * pi) * odstop)) * eksponent
 
 def pripadanje(povzetek, vrstica):
     sestevek = sum([povzetek[instanca][0][2] for instanca in povzetek])
@@ -56,14 +67,13 @@ def pripadanje(povzetek, vrstica):
         pripadnost[instanca] = povzetek[instanca][0][2] / float(sestevek)
 
         for i in range(len(povzetki)):
-            povprecje, deviation, _ = povzetki[i]
-            pripadnost[instanca] *= verjetnost(vrstica[i], povprecje, deviation)
+            povprecje, odstop, _ = povzetki[i]
+            pripadnost[instanca] *= verjetnost(vrstica[i], povprecje, odstop)
     
     return pripadnost
 
 def navkriznaValidacija(podatki, stKosov):
     data = list()
-    kopija = list(podatki)
 
     velikostKosa = int(len(podatki) / stKosov)
 
@@ -108,3 +118,5 @@ print(rezultat)
 print(rezultat2)
 
 print(navkriznaValidacija(dataset, 3))
+
+print(file_load('./neo.csv')[1])
