@@ -7,6 +7,8 @@ from math import exp
 from csv import reader
 import random
 
+# nalaganje podatkov
+
 def file_load(path):
     podatki = []
     
@@ -80,29 +82,33 @@ def pripadanje(povzetek, vrstica):
     
     return pripadnost
 
-def navkriznaValidacija(podatki, stKosov):
-    data = list()
+# implementacija train test split
 
-    velikostKosa = int(len(podatki) / stKosov)
+def splitting(podatki):
+    x_train, x_test = np.split(podatki, [int(0.8 * len(podatki))])
 
-    preurejeno = random.sample(podatki, len(podatki))
+    y_train = []
 
-    stevec = 0
+    y_test = []
 
-    for i in range(stKosov):
-        kos = list()
+    for element in x_train:
+        y_train.append(element[-1])
 
-        for j in range(velikostKosa):
-            kos.append(preurejeno[stevec])
-            stevec += 1
+    for i, element in enumerate(x_test):
+        y_test.append(element[-1])
 
-        data.append(kos)
+    x_train = np.delete(x_train, x_train.shape[1]-1, 1)
+    x_test = np.delete(x_test, x_test.shape[1]-1, 1)
 
-    return data
+    return x_train, y_train, x_test, y_test
 
 
 def algoritem():
     podatki = file_load('./neo.csv')
+
+    model = class_povzetek(podatki)
+
+    print(model)
     
     return 0
 
@@ -129,3 +135,13 @@ print(rezultat2)
 print(navkriznaValidacija(dataset, 3))
 
 print(file_load('./neo.csv')[1])
+
+algoritem()
+
+test1, test2, test3, test4 = splitting(dataset)
+
+print('splitting')
+print(test1)
+print(test2)
+print(test3)
+print(test4)
