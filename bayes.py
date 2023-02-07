@@ -36,11 +36,11 @@ def file_load(path):
 
     return podatki
 
-def klasifikacija(podatki):
+def klasifikacija(podatki, napovedi):
     classes = dict()
 
-    for podatek in podatki:
-        vrednost = podatek[-1]
+    for i, podatek in enumerate(podatki):
+        vrednost = napovedi[i]
         if(vrednost not in classes):
             classes[vrednost] = list()
         classes[vrednost].append(podatek)
@@ -53,8 +53,8 @@ def povzemanje(podatki):
     del(povzetki[-1])
     return povzetki
 
-def class_povzetek(podatki):
-    razbitje = klasifikacija(podatki)
+def class_povzetek(podatki, napovedi):
+    razbitje = klasifikacija(podatki, napovedi)
 
     slovar = dict()
 
@@ -82,6 +82,17 @@ def pripadanje(povzetek, vrstica):
     
     return pripadnost
 
+def napoved(model, vrstica):
+    rezultat = pripadanje(model, vrstica)
+
+    best_label, best_prob = None, -1
+    for class_value, probability in rezultat.items():
+        if best_label is None or probability > best_prob:
+            best_prob = probability
+            best_label = class_value
+    
+    return best_label
+
 # implementacija train test split
 
 def splitting(podatki):
@@ -94,7 +105,7 @@ def splitting(podatki):
     for element in x_train:
         y_train.append(element[-1])
 
-    for i, element in enumerate(x_test):
+    for element in x_test:
         y_test.append(element[-1])
 
     x_train = np.delete(x_train, x_train.shape[1]-1, 1)
@@ -102,13 +113,31 @@ def splitting(podatki):
 
     return x_train, y_train, x_test, y_test
 
+def tocnost(napoved, test):
+    stevec = 0
+
+    for i in range(len(napoved)):
+        stevec += 1 if napoved[i] == test[i] else 0
+
+    return  stevec / float(len(napoved)) * 100.0
+
 
 def algoritem():
     podatki = file_load('./neo.csv')
 
-    model = class_povzetek(podatki)
+    x_train, y_train, x_test, y_test = splitting(podatki)
+
+    model = class_povzetek(x_train, y_train)
+
+    napovedi = []
+
+    for vrstica in x_test:
+        rezultat = napoved(model, vrstica)
+        napovedi.append(rezultat)
 
     print(model)
+
+    print(tocnost(napovedi, y_test))
     
     return 0
 
@@ -125,23 +154,13 @@ dataset = [[3.393533211,2.331273381,0],
  [7.792783481,3.424088941,1],
  [7.939820817,0.791637231,1]]
 
-rezultat = class_povzetek(dataset)
+# rezultat = class_povzetek(dataset)
 
-rezultat2 = pripadanje(rezultat, dataset[1])
+# rezultat2 = pripadanje(rezultat, dataset[1])
 
-print(rezultat)
-print(rezultat2)
-
-print(navkriznaValidacija(dataset, 3))
+# print(rezultat)
+# print(rezultat2)
 
 print(file_load('./neo.csv')[1])
 
 algoritem()
-
-test1, test2, test3, test4 = splitting(dataset)
-
-print('splitting')
-print(test1)
-print(test2)
-print(test3)
-print(test4)
