@@ -20,9 +20,17 @@ def file_load(path):
             podatek[9] = ''.join(podatek[9].splitlines()) # odstrani \n v vrednosti
 
             for i in sorted(indeksi, reverse=True): # zanka odstrani nepomembne stolpce, ki se ne bodo uporabili v učenju
-                del podatek[i] 
+                del podatek[i]
 
             podatki.append(podatek)
+
+    del podatki[0]
+
+    for podatek in podatki:
+        for x in range(len(podatek) - 1):
+            podatek[x] = float(podatek[x])
+
+        podatek[-1] = 0 if podatek[-1] == 'False' else 1 # če je nevaren, mu določi vrednost 1 in če ni nevaren, mu določi vrednost 0
 
     return podatki
 
@@ -94,7 +102,8 @@ def navkriznaValidacija(podatki, stKosov):
 
 
 def algoritem():
-    # TODO: -> potrebno implementirati
+    podatki = file_load('./neo.csv')
+    
     return 0
 
 #test
