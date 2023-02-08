@@ -221,4 +221,6 @@ def algoritem():
     
     return 0
 
+# zagon algoritma
+
 algoritem()
